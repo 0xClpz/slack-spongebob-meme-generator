@@ -2,8 +2,12 @@
   "name": "spongebob-slack",
   "private": true,
   "workspaces": [
-    "meme-chief"
+    "memer-in-chief/"
   ],
+  "scripts": {
+    "build": "cd ./memer-in-chief && yarn build",
+    "start": "cd ./memer-in-chief && node dist/index.js"
+  },
   "version": "1.0.0",
   "main": "index.js",
   "author": "Antonio <antonio.root@gmail.com>",

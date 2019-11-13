@@ -1,1 +1,14 @@
 .env.local
+# package directories
+node_modules
+jspm_packages
+
+# Serverless directories
+.serverless
+
+.rts2_cache_cjs
+.rts2_cache_es
+.rts2_cache_umd
+
+assets
+dist

@@ -2,22 +2,28 @@
   "name": "meme-chief",
   "private": true,
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
   "license": "MIT",
+  "scripts": {
+    "build": "rm -rf ./build || true && yarn tsc",
+    "postbuild": "mkdir ./dist/assets || true && cp ./src/assets/meme.jpg ./dist/assets/meme.jpg"
+  },
   "dependencies": {
+    "@types/axios": "^0.14.0",
+    "@types/express": "^4.17.2",
+    "aws-serverless-express": "^3.3.6",
     "axios": "^0.19.0",
     "body-parser": "^1.19.0",
     "canvas": "^2.6.0",
     "dotenv": "^8.2.0",
     "dotenv-expand": "^5.1.0",
     "express": "^4.17.1",
-    "form-data": "^3.0.0"
-  },
-  "devDependencies": {
-    "@types/express": "^4.17.2",
-    "express": "^4.17.1",
+    "form-data": "^3.0.0",
     "nodemon": "^1.19.4",
     "ts-node": "^8.5.0",
     "typescript": "^3.7.2"
+  },
+  "devDependencies": {
+    "microbundle": "^0.11.0"
   }
 }
