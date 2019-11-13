@@ -1,0 +1,14 @@
+{
+  "name": "spongebob-slack",
+  "private": true,
+  "workspaces": [
+    "meme-chief"
+  ],
+  "version": "1.0.0",
+  "main": "index.js",
+  "author": "Antonio <antonio.root@gmail.com>",
+  "license": "MIT",
+  "devDependencies": {
+    "prettier": "^1.19.1"
+  }
+}
