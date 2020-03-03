@@ -11,4 +11,8 @@ jspm_packages
 .rts2_cache_umd
 
 assets
+dist.DS_Store
+.DS_Store
 dist
+.env.production
+yarn-error.log

@@ -1,54 +1,57 @@
-import { createCanvas, loadImage } from "canvas";
-import path from "path";
+import Jimp from "jimp";
+import * as path from "path";
 
 function tweak(character: string) {
   return Math.random() < 0.5
     ? character.toLowerCase()
     : character.toUpperCase();
 }
-export const generateSpongebobMeme = async (phrase: string) => {
-  const image = await loadImage(path.join(__dirname, "..", "assets", "meme.jpg"));
 
-  const canvas = createCanvas(583, 411);
+export async function generateSpongebobMeme(userInput: string) {
+  const image = await Jimp.read(path.resolve(__dirname, '../assets/meme.jpg'));
+  const font = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
+  const blackFont = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
 
-  const ctx = canvas.getContext("2d");
+  const text = userInput
+    .split("")
+    .map(tweak)
+    .join("");
 
+  image.print(
+    blackFont,
+    9,
+    9,
+    {
+      text,
+      alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
+    },
+    image.getWidth() - 10
+  );
 
-  let fontSize = 42;
+  image.print(
+    blackFont,
+    11,
+    11,
+    {
+      text,
+      alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
+    },
+    image.getWidth() - 10
+  );
 
-
-  let width = 583;
-  let height = 411;
-  let center = width / 2;
-  let lineWidth = 2.5;
-
-  ctx.fillStyle = "#FFF";
-  ctx.strokeStyle = "#000";
-  ctx.textAlign = "center";
-
-  ctx.drawImage(image, 0, 0);
-  ctx.font = fontSize + "px Arial";
-  ctx.lineWidth = lineWidth;
-  const text = phrase.split("").map(tweak).join("");
-  let m = text.match(/([^\n]+(?:\n[^\n]+)*)?(\n(?:\n[^\n]+)*)?/);
-  // @ts-ignore
-  let top = m[1] ? m[1] : "";
-  // @ts-ignore
-  let bottom = m[2] ? m[2] : "";
-  top.split("\n").map(function (line, lineno) {
-    // top margin + number of lines * char height incl. padding
-    var yoffset = 5 + ((1 + lineno) * (fontSize * 1.1));
-    ctx.fillText(line, center, yoffset, width - 10);
-    ctx.strokeText(line, center, yoffset, width - 10);
-  });
-  bottom.split("\n").reverse().map(function (line, lineno) {
-    var yoffset = height - 10 - (lineno * (fontSize * 1.1));
-    ctx.fillText(line, center, yoffset, width - 10);
-    ctx.strokeText(line, center, yoffset, width - 10);
-  });
+  image.print(
+    font,
+    10,
+    10,
+    {
+      text,
+      alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
+    },
+    image.getWidth() - 10
+  );
 
   return {
-    stream: canvas.createPNGStream(),
+    buffer: image.getBufferAsync(Jimp.MIME_JPEG),
     text
-  }
-};
+  };
+}

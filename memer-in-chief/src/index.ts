@@ -3,37 +3,49 @@ import express from "express";
 import axios from "axios";
 import bodyParser from "body-parser";
 import FormData from "form-data";
+import serverless from "serverless-http";
+import { init, Handlers } from "@sentry/node";
+// @ts-ignore
+import toStream from "buffer-to-stream";
 import { generateSpongebobMeme } from "./helpers/memeHelpers";
 
-const app = express();
+export const app = express();
+
+if (process.env.SENTRY_DSN) {
+  init({ dsn: process.env.SENTRY_DSN });
+}
+
+app.use(Handlers.requestHandler());
 
 app.post(
   "/slack/generate",
   bodyParser.urlencoded({ extended: false }),
   async (req, res) => {
-    res.sendStatus(200);
     const { text, channel_id } = req.body;
-    const { stream, text: processedText } = await generateSpongebobMeme(text);
+    const { text: processedText, buffer } = await generateSpongebobMeme(text);
 
     const form = new FormData();
 
     form.append("token", process.env.SLACK_TOKEN);
     form.append("title", processedText);
-    form.append("filename", "image.png");
+    form.append("filename", "image.jpg");
     form.append("filetype", "auto");
     form.append("channels", channel_id);
-    form.append("file", stream, "image.png");
+    form.append("file", toStream(await buffer), "image.jpg");
 
     await axios.post("https://slack.com/api/files.upload", form, {
       headers: form.getHeaders()
     });
+    res.sendStatus(200);
   }
 );
 
+app.get("/data", (req, res) => {
+  res.send(process.env.SLACK_TOKEN);
+});
+
 app.get("/ping", (req, res) => res.send("pong"));
 
-app.listen(process.env.port || 9000, () => {
-  console.log(
-    `🧽  Server up and running at port ${process.env.port || 9000} 🧽`
-  );
-});
+app.use(Handlers.errorHandler());
+
+module.exports.handler = serverless(app);
