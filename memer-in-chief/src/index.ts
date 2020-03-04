@@ -66,7 +66,6 @@ module.exports.imageWorker = async (event: imageWorkerPayload) => {
 
   const form = new FormData();
 
-  console.log('still alive2')
   form.append("token", process.env.SLACK_TOKEN);
   form.append("title", processedText);
   form.append("filename", "image.jpg");
