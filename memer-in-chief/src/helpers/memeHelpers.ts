@@ -8,12 +8,13 @@ function tweak(character: string) {
 }
 
 export async function generateSpongebobMeme(userInput: string) {
-  const image = await Jimp.read(path.resolve(__dirname, '../assets/meme.jpg'));
+  const image = await Jimp.read(path.resolve(__dirname, "../assets/meme.jpg"));
   const font = await Jimp.loadFont(Jimp.FONT_SANS_32_WHITE);
   const blackFont = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
 
   const text = userInput
-    .replace(/\W/g, '')
+    .replace(/\'/g, "")
+    .replace(/\"/g, "")
     .split("")
     .map(tweak)
     .join("");
@@ -26,7 +27,7 @@ export async function generateSpongebobMeme(userInput: string) {
       text,
       alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
     },
-    image.getWidth() - 20
+    image.getWidth()
   );
 
   image.print(
@@ -37,7 +38,7 @@ export async function generateSpongebobMeme(userInput: string) {
       text,
       alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
     },
-    image.getWidth() - 20
+    image.getWidth()
   );
 
   image.print(
@@ -48,7 +49,7 @@ export async function generateSpongebobMeme(userInput: string) {
       text,
       alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
     },
-    image.getWidth() - 20
+    image.getWidth()
   );
 
   return {
