@@ -13,6 +13,7 @@ export async function generateSpongebobMeme(userInput: string) {
   const blackFont = await Jimp.loadFont(Jimp.FONT_SANS_32_BLACK);
 
   const text = userInput
+    .replace(/\W/g, '')
     .split("")
     .map(tweak)
     .join("");
