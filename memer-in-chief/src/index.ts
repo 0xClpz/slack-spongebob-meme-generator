@@ -8,12 +8,18 @@ import { init, Handlers } from "@sentry/node";
 // @ts-ignore
 import toStream from "buffer-to-stream";
 import { generateSpongebobMeme } from "./helpers/memeHelpers";
+import AWS from "aws-sdk";
 
 export const app = express();
 
 if (process.env.SENTRY_DSN) {
   init({ dsn: process.env.SENTRY_DSN });
 }
+
+type imageWorkerPayload = {
+  text: string;
+  channel_id: string;
+};
 
 app.use(Handlers.requestHandler());
 
@@ -22,21 +28,25 @@ app.post(
   bodyParser.urlencoded({ extended: false }),
   async (req, res) => {
     const { text, channel_id } = req.body;
-    const { text: processedText, buffer } = await generateSpongebobMeme(text);
-
-    const form = new FormData();
-
-    form.append("token", process.env.SLACK_TOKEN);
-    form.append("title", processedText);
-    form.append("filename", "image.jpg");
-    form.append("filetype", "auto");
-    form.append("channels", channel_id);
-    form.append("file", toStream(await buffer), "image.jpg");
-
-    await axios.post("https://slack.com/api/files.upload", form, {
-      headers: form.getHeaders()
+    console.log(req.body)
+    const lambda = new AWS.Lambda({
+      region: "us-east-1"
     });
-    res.sendStatus(200);
+    const payload: imageWorkerPayload = {
+      text,
+      channel_id
+    };
+
+    await lambda
+      .invoke({
+        FunctionName: "memer-in-chief-dev-image-worker",
+        Payload: JSON.stringify(payload),
+        InvocationType: "Event"
+      })
+      .promise();
+    res.send({
+      text: 'Meme request r e c e i v e d 🧠'
+    });
   }
 );
 
@@ -49,3 +59,23 @@ app.get("/ping", (req, res) => res.send("pong"));
 app.use(Handlers.errorHandler());
 
 module.exports.handler = serverless(app);
+
+module.exports.imageWorker = async (event: imageWorkerPayload) => {
+  const { text, channel_id } = event;
+  const { text: processedText, buffer } = await generateSpongebobMeme(text);
+
+  const form = new FormData();
+
+  console.log('still alive2')
+  form.append("token", process.env.SLACK_TOKEN);
+  form.append("title", processedText);
+  form.append("filename", "image.jpg");
+  form.append("filetype", "auto");
+  form.append("channels", channel_id);
+  form.append("file", toStream(await buffer), "image.jpg");
+
+  await axios.post("https://slack.com/api/files.upload", form, {
+    headers: form.getHeaders()
+  });
+  return "ok";
+};

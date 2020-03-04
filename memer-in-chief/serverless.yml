@@ -7,6 +7,13 @@ provider:
   runtime: nodejs12.x
   stage: dev
   region: us-east-1
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - lambda:InvokeFunction
+        - lambda:InvokeAsync
+      Resource:
+        - "*"
 
 functions:
   app:
@@ -14,3 +21,5 @@ functions:
     events:
       - http: ANY /
       - http: 'ANY {proxy+}'
+  image-worker:
+    handler: dist/index.imageWorker
