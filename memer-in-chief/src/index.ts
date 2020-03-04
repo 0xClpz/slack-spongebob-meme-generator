@@ -50,12 +50,6 @@ app.post(
   }
 );
 
-app.get("/data", (req, res) => {
-  res.send(process.env.SLACK_TOKEN);
-});
-
-app.get("/ping", (req, res) => res.send("pong"));
-
 app.use(Handlers.errorHandler());
 
 module.exports.handler = serverless(app);
