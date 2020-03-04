@@ -26,7 +26,7 @@ export async function generateSpongebobMeme(userInput: string) {
       text,
       alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
     },
-    image.getWidth() - 10
+    image.getWidth() - 20
   );
 
   image.print(
@@ -37,7 +37,7 @@ export async function generateSpongebobMeme(userInput: string) {
       text,
       alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
     },
-    image.getWidth() - 10
+    image.getWidth() - 20
   );
 
   image.print(
@@ -48,7 +48,7 @@ export async function generateSpongebobMeme(userInput: string) {
       text,
       alignmentX: Jimp.HORIZONTAL_ALIGN_CENTER
     },
-    image.getWidth() - 10
+    image.getWidth() - 20
   );
 
   return {
