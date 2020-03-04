@@ -19,6 +19,7 @@ if (process.env.SENTRY_DSN) {
 type imageWorkerPayload = {
   text: string;
   channel_id: string;
+  response_url: string;
 };
 
 app.use(Handlers.requestHandler());
@@ -27,14 +28,15 @@ app.post(
   "/slack/generate",
   bodyParser.urlencoded({ extended: false }),
   async (req, res) => {
-    const { text, channel_id } = req.body;
-    console.log(req.body)
+    const { text, channel_id, response_url } = req.body;
+    console.log(req.body);
     const lambda = new AWS.Lambda({
       region: "us-east-1"
     });
     const payload: imageWorkerPayload = {
       text,
-      channel_id
+      channel_id,
+      response_url
     };
 
     await lambda
@@ -45,7 +47,7 @@ app.post(
       })
       .promise();
     res.send({
-      text: 'Meme request r e c e i v e d 🧠'
+      text: "Meme request r e c e i v e d 🧠"
     });
   }
 );
@@ -55,8 +57,17 @@ app.use(Handlers.errorHandler());
 module.exports.handler = serverless(app);
 
 module.exports.imageWorker = async (event: imageWorkerPayload) => {
-  const { text, channel_id } = event;
+  const { text, channel_id, response_url } = event;
   const { text: processedText, buffer } = await generateSpongebobMeme(text);
+
+  const cleanOkMessage = {
+    response_type: "ephemeral",
+    replace_original: true,
+    delete_original: true,
+    text: ""
+  };
+
+  await axios.post(response_url, cleanOkMessage)
 
   const form = new FormData();
 
@@ -70,5 +81,6 @@ module.exports.imageWorker = async (event: imageWorkerPayload) => {
   await axios.post("https://slack.com/api/files.upload", form, {
     headers: form.getHeaders()
   });
+
   return "ok";
 };
