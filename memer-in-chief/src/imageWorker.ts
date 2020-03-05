@@ -12,7 +12,6 @@ export const imageWorker = async (event: imageWorkerPayload) => {
   const team = await searchSlackTeam(team_id);
 
   const form = new FormData();
-
   form.append("token", team.bot.bot_access_token);
   form.append("title", processedText);
   form.append("filename", "image.jpg");
