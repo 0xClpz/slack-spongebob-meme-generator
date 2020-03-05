@@ -4,7 +4,7 @@ import {
   table
 } from "@aws/dynamodb-data-mapper-annotations";
 import DynamoDB from "aws-sdk/clients/dynamodb";
-import {DataMapper} from "@aws/dynamodb-data-mapper";
+import { DataMapper } from "@aws/dynamodb-data-mapper";
 
 class Bot {
   @attribute()
@@ -27,13 +27,15 @@ export class SlackTeam {
 
   @attribute()
   bot: Bot;
-}
 
+  @attribute({ defaultProvider: () => 0 })
+  memes_created?: number;
+}
 
 const client = new DynamoDB({ region: "us-east-1" });
 const mapper = new DataMapper({ client });
 
-export const createSlackTeam = async (payload: SlackTeam) => {
+export const createOrUpdateSlackTeam = async (payload: SlackTeam) => {
   const slackTeam = Object.assign(new SlackTeam(), payload);
   await mapper.put({ item: slackTeam });
   return slackTeam;
@@ -47,3 +49,16 @@ export const searchSlackTeam = async (team_id: string) => {
   return items[0];
 };
 
+export const getAnalytics = async () => {
+  let totalMemes = 0;
+  let totalTeams = 0;
+  for await (const item of mapper.scan(SlackTeam)) {
+    totalMemes += item?.memes_created ?? 0;
+    totalTeams += 1;
+  }
+
+  return {
+    memes: totalMemes,
+    teams: totalTeams
+  };
+};

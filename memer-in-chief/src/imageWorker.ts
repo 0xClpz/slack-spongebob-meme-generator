@@ -3,7 +3,7 @@ import axios from "axios";
 import FormData from "form-data";
 import { imageWorkerPayload } from "./types/sharedTypes";
 import toStream from "buffer-to-stream";
-import { searchSlackTeam } from "./database/SlackTeam";
+import { createOrUpdateSlackTeam, searchSlackTeam } from "./database/SlackTeam";
 
 export const imageWorker = async (event: imageWorkerPayload) => {
   const { text, channel_id, team_id } = event;
@@ -22,6 +22,10 @@ export const imageWorker = async (event: imageWorkerPayload) => {
   await axios.post("https://slack.com/api/files.upload", form, {
     headers: form.getHeaders()
   });
+
+  team.memes_created = (team.memes_created || 0) + 1;
+
+  await createOrUpdateSlackTeam(team);
 
   return "ok";
 };

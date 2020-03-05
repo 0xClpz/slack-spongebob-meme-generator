@@ -1,10 +1,25 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import Layout from "../components/layout"
 import SEO from "../components/seo"
+import axios from "axios"
 
 const AddToSlack = () => {
+  const [stats, setStats] = useState({
+    memes: 0,
+    teams: 0,
+  })
+
+  useEffect(() => {
+    axios
+      .get(`https://798vx7fgrd.execute-api.us-east-1.amazonaws.com/dev/stats`)
+      .then(({ data }) => setStats(data))
+  }, [])
+
   return (
     <>
+      <p>
+        Installed in {stats.teams} workspaces - {stats.memes} created
+      </p>
       <a href="https://slack.com/oauth/authorize?scope=commands,bot&client_id=977747011076.980065613159">
         <img
           height="40"

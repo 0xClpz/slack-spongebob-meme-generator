@@ -4,13 +4,17 @@ import AWS from "aws-sdk";
 import { imageWorkerPayload } from "./types/sharedTypes";
 import express from "express";
 import axios from "axios";
+// @ts-ignore
+import cors from 'cors'
 import { SlackOauthAccessPayload, SlackOauthResponse } from "./types/slack";
 import querystring from "querystring";
-import { createSlackTeam } from "./database/SlackTeam";
+import { createOrUpdateSlackTeam, getAnalytics } from "./database/SlackTeam";
 
 export const app = express();
 
 app.use(Handlers.requestHandler());
+
+app.use(cors())
 
 app.get("/slack/authenticate", async (req, res) => {
   const { code } = req.query;
@@ -37,14 +41,18 @@ app.get("/slack/authenticate", async (req, res) => {
       throw data.error;
     }
 
-    console.log(data);
-    await createSlackTeam(data);
+    await createOrUpdateSlackTeam(data);
 
     res.redirect(`${front_url}/success`);
   } catch (e) {
     console.log(e);
     res.redirect(`${front_url}/error`);
   }
+});
+
+app.get("/stats", async (req, res) => {
+  const analytics = await getAnalytics();
+  res.json(analytics);
 });
 
 app.post(
