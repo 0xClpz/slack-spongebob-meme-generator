@@ -11,6 +11,8 @@
     "dev": "nodemon ./src --exec 'ts-node src/dev.ts'"
   },
   "dependencies": {
+    "@aws/dynamodb-data-mapper": "^0.7.3",
+    "@aws/dynamodb-data-mapper-annotations": "^0.7.3",
     "@sentry/node": "5.13.0",
     "@types/axios": "^0.14.0",
     "@types/express": "^4.17.2",

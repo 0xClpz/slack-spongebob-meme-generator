@@ -12,6 +12,7 @@ provider:
       Action:
         - lambda:InvokeFunction
         - lambda:InvokeAsync
+        - dynamodb:*
       Resource:
         - "*"
 
