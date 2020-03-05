@@ -18,7 +18,7 @@ const AddToSlack = () => {
   return (
     <>
       <p>
-        Installed in {stats.teams} workspaces - {stats.memes} created
+        Installed in {stats.teams} workspaces - {stats.memes} memes created
       </p>
       <a href="https://slack.com/oauth/authorize?scope=commands,bot&client_id=977747011076.980065613159">
         <img
